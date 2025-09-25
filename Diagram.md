@@ -2,38 +2,38 @@
 
 flowchart TD
     A[Developer] --> B[Push ApplicationSet YAML to Git]
-    B --> C[GitHub Webhook<br/>Triggers Refresh]
-    C --> D[ArgoCD API Server<br/>(Receives Sync Request)]
+    B --> C[GitHub Webhook Triggers Refresh]
+    C --> D[ArgoCD API Server (Receives Sync Request)]
     
-    D --> E[ApplicationSet Controller<br/>Watches ApplicationSet CRDs]
+    D --> E[ApplicationSet Controller Watches ApplicationSet CRDs]
     
     subgraph E[ApplicationSet Controller Workflow]
-        E1[Reads ApplicationSet Spec] --> E2[Executes Generators<br/>Git/Cluster/List/Matrix]
+        E1[Reads ApplicationSet Spec] --> E2[Executes Generators: Git/Cluster/List/Matrix]
         E2 --> E3[Applies Template]
         E3 --> E4[Creates/Updates Application CRs]
     end
     
-    E4 --> F[Application CR<br/>Cluster: dev, Namespace: app-dev]
-    E4 --> G[Application CR<br/>Cluster: staging, Namespace: app-staging]
-    E4 --> H[Application CR<br/>Cluster: prod, Namespace: app-prod]
+    E4 --> F[Application CR: Cluster dev, Namespace app-dev]
+    E4 --> G[Application CR: Cluster staging, Namespace app-staging]
+    E4 --> H[Application CR: Cluster prod, Namespace app-prod]
     
-    F --> I[Application Controller<br/>Sync Engine & Reconciler]
+    F --> I[Application Controller: Sync Engine & Reconciler]
     G --> I
     H --> I
     
-    I --> J[Repo Server<br/>Fetches & Renders Manifests]
-    K[Application Manifests<br/>Git Repository] --> J
+    I --> J[Repo Server Fetches & Renders Manifests]
+    K[Application Manifests Git Repository] --> J
     
-    J --> L[Generates Kubernetes Manifests<br/>Kustomize/Helm/YAML]
+    J --> L[Generates Kubernetes Manifests: Kustomize/Helm/YAML]
     L --> M[Compares Desired vs Actual State]
     
-    M --> N[Target Cluster API<br/>Development]
-    M --> O[Target Cluster API<br/>Staging]
-    M --> P[Target Cluster API<br/>Production]
+    M --> N[Target Cluster API: Development]
+    M --> O[Target Cluster API: Staging]
+    M --> P[Target Cluster API: Production]
     
-    N --> Q[Deployed: app-dev<br/>Status: Synced]
-    O --> R[Deployed: app-staging<br/>Status: Synced]
-    P --> S[Deployed: app-prod<br/>Status: Synced]
+    N --> Q[Deployed: app-dev Status Synced]
+    O --> R[Deployed: app-staging Status Synced]
+    P --> S[Deployed: app-prod Status Synced]
     
     D --> T[Notification Controller]
     T --> U[Email Alerts]
