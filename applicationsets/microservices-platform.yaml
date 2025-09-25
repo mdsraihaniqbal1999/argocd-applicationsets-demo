@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: microservices-platform-local
+  namespace: argocd
+spec:
+  generators:
+  - matrix:
+      generators:
+        - git:
+            repoURL: https://github.com/mdsraihaniqbal1999/argocd-applicationsets-demo
+            revision: HEAD
+            directories:
+              - path: "apps/*"
+        - list:
+            elements:
+            - environment: dev
+              namespace: microservices-dev
+              replicas: 1
+            - environment: staging
+              namespace: microservices-staging
+              replicas: 2
+            - environment: prod
+              namespace: microservices-prod
+              replicas: 3
+  template:
+    metadata:
+      name: '{{environment}}-{{path.basename}}'
+      labels:
+        environment: '{{environment}}'
+        service: '{{path.basename}}'
+      annotations:
+        argocd.argoproj.io/sync-options: CreateNamespace=true
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/mdsraihaniqbal1999/argocd-applicationsets-demo
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
