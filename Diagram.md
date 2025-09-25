@@ -1,53 +1,63 @@
 ```mermaid
 flowchart TD
-    A[Developer] --> B[Push ApplicationSet YAML to Git]
-    B --> C[GitHub Webhook Triggers Refresh]
-    C --> D[ArgoCD API Server – Receives Sync Request]
-    
-    D --> E[ApplicationSet Controller Watches ApplicationSet CRDs]
-    
-    subgraph E_Workflow[ApplicationSet Controller Workflow]
-        E1[Reads ApplicationSet Spec] --> E2[Executes Generators: Git / Cluster / List / Matrix]
-        E2 --> E3[Applies Template]
-        E3 --> E4[Creates / Updates Application CRs]
+    %% Developer section
+    subgraph DEV [Developer]
+        A[Developer] --> B[Push ApplicationSet YAML to Git]
     end
-    
-    E4 --> F[Application CR: Cluster dev, Namespace app-dev]
-    E4 --> G[Application CR: Cluster staging, Namespace app-staging]
-    E4 --> H[Application CR: Cluster prod, Namespace app-prod]
-    
-    F --> I[Application Controller: Sync Engine & Reconciler]
-    G --> I
-    H --> I
-    
-    I --> J[Repo Server Fetches & Renders Manifests]
-    K[Application Manifests Git Repository] --> J
-    
-    J --> L[Generates Kubernetes Manifests: Kustomize / Helm / YAML]
-    L --> M[Compares Desired vs Actual State]
-    
-    M --> N[Target Cluster API: Development]
-    M --> O[Target Cluster API: Staging]
-    M --> P[Target Cluster API: Production]
-    
-    N --> Q[Deployed: app-dev Status Synced]
-    O --> R[Deployed: app-staging Status Synced]
-    P --> S[Deployed: app-prod Status Synced]
-    
-    D --> T[Notification Controller]
-    T --> U[Email Alerts]
-    T --> V[Slack Notifications]
-    
-    classDef dev fill:#1e3a1e,stroke:#4CAF50,stroke-width:2px,color:#fff
-    classDef staging fill:#3a2e1e,stroke:#FF9800,stroke-width:2px,color:#fff
-    classDef prod fill:#3a1e1e,stroke:#F44336,stroke-width:2px,color:#fff
-    classDef argo fill:#2d2d2d,stroke:#fff,stroke-width:2px,color:#fff
-    classDef git fill:#24292e,stroke:#fff,stroke-width:2px,color:#fff
-    
-    class F,N,Q dev
-    class G,O,R staging
-    class H,P,S prod
-    class D,E,I,J,T argo
-    class B,C,K git
+
+    %% Git/GitHub section
+    subgraph GIT [Git / Webhook]
+        B --> C[GitHub Webhook Trigger]
+        C --> D[ArgoCD Repo Server refreshes Git]
+    end
+
+    %% ApplicationSet Controller section
+    subgraph ASC [ApplicationSet Controller]
+        E[Watches ApplicationSet CRs independently] 
+        E --> F[Detect Git changes via Repo Server (indirect)]
+        F --> G[Read ApplicationSet Spec]
+        G --> H[Execute Generators (Git/Cluster/List/Matrix)]
+        H --> I[Apply Template]
+        I --> J[Create or Update Application CRs]
+    end
+
+    %% Generated Application CRs
+    subgraph APP_CR [Generated Applications]
+        J --> K[Application CR: dev]
+        J --> L[Application CR: staging]
+        J --> M[Application CR: prod]
+    end
+
+    %% Application Controller section
+    subgraph AC [Application Controller]
+        N[Watches Application CRs independently]
+        K --> N
+        L --> N
+        M --> N
+        N --> O[Detect new/updated Applications]
+        O --> P[Fetch and Render Manifests (Repo Server)]
+        Q[Git Repository with Manifests] --> P
+        P --> R[Compare Desired vs Actual State]
+    end
+
+    %% Cluster deployment section
+    subgraph CLUSTERS [Target Clusters]
+        R --> S[Deploy to Dev Cluster]
+        R --> T[Deploy to Staging Cluster]
+        R --> U[Deploy to Prod Cluster]
+
+        S --> V[app-dev deployed / Synced]
+        T --> W[app-staging deployed / Synced]
+        U --> X[app-prod deployed / Synced]
+    end
+
+    %% Notification Controller section
+    subgraph NOTIF [Notification Controller]
+        Y[Watches Application events independently]
+        V --> Y
+        W --> Y
+        X --> Y
+        Y --> Z[Send Email or Slack Alerts]
+    end
 
 ```
