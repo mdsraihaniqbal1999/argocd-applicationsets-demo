@@ -16,13 +16,13 @@ spec:
             elements:
             - environment: dev
               namespace: microservices-dev
-              replicas: "2"           # Changed from 1 to "2"
+              replicas: "1"           # Changed from 1 to "2"
             - environment: staging
               namespace: microservices-staging
-              replicas: "2"           # Changed from 2 to "3"
+              replicas: "1"           # Changed from 2 to "3"
             - environment: prod
               namespace: microservices-prod
-              replicas: "3"           # Changed from 3 to "4"
+              replicas: "1"           # Changed from 3 to "4"
   template:
     metadata:
       name: '{{environment}}-{{path.basename}}'
