@@ -1,7 +1,7 @@
 ```mermaid
 
 flowchart TD
-    %% Developer/User pushes ApplicationSet YAML
+     Developer/User pushes ApplicationSet YAML
     A[Developer] --> B[Push ApplicationSet YAML to Git]
     B --> C[GitHub Webhook<br/>Triggers Refresh]
     C --> D[ArgoCD API Server<br/>(Receives Sync Request)]
