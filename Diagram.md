@@ -1,16 +1,15 @@
 ```mermaid
-
 flowchart TD
     A[Developer] --> B[Push ApplicationSet YAML to Git]
     B --> C[GitHub Webhook Triggers Refresh]
-    C --> D[ArgoCD API Server (Receives Sync Request)]
+    C --> D[ArgoCD API Server – Receives Sync Request]
     
     D --> E[ApplicationSet Controller Watches ApplicationSet CRDs]
     
-    subgraph E[ApplicationSet Controller Workflow]
-        E1[Reads ApplicationSet Spec] --> E2[Executes Generators: Git/Cluster/List/Matrix]
+    subgraph E_Workflow[ApplicationSet Controller Workflow]
+        E1[Reads ApplicationSet Spec] --> E2[Executes Generators: Git / Cluster / List / Matrix]
         E2 --> E3[Applies Template]
-        E3 --> E4[Creates/Updates Application CRs]
+        E3 --> E4[Creates / Updates Application CRs]
     end
     
     E4 --> F[Application CR: Cluster dev, Namespace app-dev]
@@ -24,7 +23,7 @@ flowchart TD
     I --> J[Repo Server Fetches & Renders Manifests]
     K[Application Manifests Git Repository] --> J
     
-    J --> L[Generates Kubernetes Manifests: Kustomize/Helm/YAML]
+    J --> L[Generates Kubernetes Manifests: Kustomize / Helm / YAML]
     L --> M[Compares Desired vs Actual State]
     
     M --> N[Target Cluster API: Development]
@@ -50,6 +49,5 @@ flowchart TD
     class H,P,S prod
     class D,E,I,J,T argo
     class B,C,K git
-
 
 ```
