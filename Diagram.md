@@ -1,60 +1,55 @@
 ```mermaid
 
 flowchart TD
-    %% Developer section
-    subgraph DEV [Developer Workflow]
-        A[Developer] --> B[Push ApplicationSet YAML to Git]
-    end
+    %% Step 1: Developer pushes ApplicationSet
+    A[1. Developer pushes ApplicationSet YAML] --> B[2. Config Git Repository]
     
-    %% Git/Webhook section  
-    subgraph GIT [Git Repository & Webhook]
-        B --> C[GitHub Webhook Trigger]
-        C --> D[ArgoCD Repo Server refreshes Git]
-        Q[Git Repository with App Manifests]
-    end
+    %% Step 2-3: Webhook and repo refresh
+    B --> C[3. GitHub Webhook Trigger]
+    C --> D[4. ArgoCD Repo Server refreshes Config Repo]
     
-    %% ApplicationSet Controller section
-    subgraph ASC [ApplicationSet Controller Process]
-        D --> E[Watches ApplicationSet CRs]
-        E --> F[Detect Git changes via Repo Server]
-        F --> G[Read ApplicationSet Spec]
-        G --> H[Execute Generators<br/>Git/Cluster/List/Matrix]
-        H --> I[Apply Template to Generate]
-        
-        %% Generated Applications directly in the flow
-        I --> K[Create Application CR: dev]
-        I --> L[Create Application CR: staging] 
-        I --> M[Create Application CR: prod]
-    end
+    %% Step 4-8: ApplicationSet Controller Process
+    D --> E[5. ApplicationSet Controller detects changes]
+    E --> F[6. Read ApplicationSet specification]
+    F --> G[7. Execute Generators Git/Cluster/List/Matrix]
+    G --> H[8. Apply template to generate Applications]
     
-    %% Application Controller section
-    subgraph AC [Application Controller Process]
-        K --> N[Application Controller<br/>watches Application CRs]
-        L --> N
-        M --> N
-        N --> O[Detect new/updated Applications]
-        O --> P[Fetch and Render Manifests]
-        Q --> P
-        P --> R[Compare Desired vs Actual State]
-    end
+    %% Step 9: Generate individual Applications
+    H --> I[9. Create Application CR: dev]
+    H --> J[9. Create Application CR: staging]
+    H --> K[9. Create Application CR: prod]
     
-    %% Cluster deployment section
-    subgraph CLUSTERS [Target Cluster Deployments]
-        R --> S[Deploy to Dev Cluster]
-        R --> T[Deploy to Staging Cluster] 
-        R --> U[Deploy to Prod Cluster]
-        
-        S --> V[app-dev deployed/synced]
-        T --> W[app-staging deployed/synced]
-        U --> X[app-prod deployed/synced]
-    end
+    %% Step 10: Application Controller takes over
+    I --> L[10. Application Controller watches new Application CRs]
+    J --> L
+    K --> L
     
-    %% Notification Controller section
-    subgraph NOTIF [Notification Controller]
-        V --> Y[Watches Application events]
-        W --> Y
-        X --> Y
-        Y --> Z[Send Alerts<br/>Email/Slack/etc]
-    end
+    %% Step 11-12: Application processing
+    L --> M[11. Read Application specs and target repositories]
+    M --> N[12. Repo Server fetches from Application Git Repositories]
+    
+    %% Application repositories (separate from config repo)
+    O[Application Git Repository: dev-app] --> N
+    P[Application Git Repository: staging-app] --> N
+    Q[Application Git Repository: prod-app] --> N
+    
+    %% Step 13-14: Manifest processing and deployment
+    N --> R[13. Render manifests Helm/Kustomize/Plain YAML]
+    R --> S[14. Compare desired vs actual state]
+    
+    %% Step 15: Deploy to clusters
+    S --> T[15a. Deploy to Dev Cluster]
+    S --> U[15b. Deploy to Staging Cluster]
+    S --> V[15c. Deploy to Production Cluster]
+    
+    %% Step 16: Sync status
+    T --> W[16a. dev-app synced]
+    U --> X[16b. staging-app synced]
+    V --> Y[16c. prod-app synced]
+    
+    %% Step 17: Notifications
+    W --> Z[17. Notification Controller sends alerts]
+    X --> Z
+    Y --> Z
 
 ```
