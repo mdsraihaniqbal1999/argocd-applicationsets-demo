@@ -9,23 +9,17 @@ spec:
       elements:
       - env: dev
         replicas: "1"
-      - env: staging
-        replicas: "2"
       - env: prod  
         replicas: "3"
   template:
     metadata:
       name: 'nginx-{{env}}'
-      labels:
-        environment: '{{env}}'
-        generator: 'applicationset'
     spec:
       project: demo-project
       source:
-        # Using working public repo for demo
         repoURL: 'https://github.com/mdsraihaniqbal1999/argocd-applicationsets-demo'
-        targetRevision: HEAD
-        path: 'guestbook'  # Simple working example
+        targetRevision: main
+        path: 'apps/nginx/overlays/{{env}}'
       destination:
         server: https://kubernetes.default.svc
         namespace: 'nginx-{{env}}'
@@ -35,9 +29,3 @@ spec:
           selfHeal: true
         syncOptions:
         - CreateNamespace=true
-        retry:
-          limit: 5
-          backoff:
-            duration: 5s
-            factor: 2
-            maxDuration: 3m
