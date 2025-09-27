@@ -17,7 +17,7 @@ spec:
     spec:
       project: demo-project
       source:
-        repoURL: 'https://github.com/yourusername/argocd-appset-demo'
+        repoURL: 'https://github.com/mdsraihaniqbal1999/argocd-applicationsets-demo'
         targetRevision: main
         path: 'apps/nginx/overlays/{{env}}'
       destination:
