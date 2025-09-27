@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: nginx-appset
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - env: dev
+        replicas: "1"
+      - env: prod  
+        replicas: "3"
+  template:
+    metadata:
+      name: 'nginx-{{env}}'
+    spec:
+      project: demo-project
+      source:
+        repoURL: 'https://github.com/yourusername/argocd-appset-demo'
+        targetRevision: main
+        path: 'apps/nginx/overlays/{{env}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'nginx-{{env}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
