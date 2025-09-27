@@ -6,10 +6,17 @@ namespace: nginx-dev
 resources:
 - ../../base
 
-patchesStrategicMerge:
-- patch.yaml
+# Modern patches syntax (no deprecation warnings)
+patches:
+- path: deployment-patch.yaml
+  target:
+    kind: Deployment
+    name: nginx
 
-commonLabels:
-  environment: dev
+# Modern labels syntax
+labels:
+- pairs:
+    environment: dev
+    tier: non-production
 
 namePrefix: dev-

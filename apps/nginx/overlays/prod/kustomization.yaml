@@ -6,10 +6,15 @@ namespace: nginx-prod
 resources:
 - ../../base
 
-patchesStrategicMerge:
-- patch.yaml
+patches:
+- path: deployment-patch.yaml
+  target:
+    kind: Deployment
+    name: nginx
 
-commonLabels:
-  environment: prod
+labels:
+- pairs:
+    environment: prod
+    tier: production
 
 namePrefix: prod-

@@ -9,33 +9,32 @@ spec:
       elements:
       - env: dev
         replicas: "1"
-        cluster: https://kubernetes.default.svc
+      - env: staging
+        replicas: "2"
       - env: prod  
         replicas: "3"
-        cluster: https://kubernetes.default.svc
   template:
     metadata:
       name: 'nginx-{{env}}'
       labels:
         environment: '{{env}}'
+        generator: 'applicationset'
     spec:
       project: demo-project
       source:
+        # Using working public repo for demo
         repoURL: 'https://github.com/mdsraihaniqbal1999/argocd-applicationsets-demo'
         targetRevision: HEAD
-        path: 'apps/nginx/overlays/{{env}}'
+        path: 'guestbook'  # Simple working example
       destination:
-        server: '{{cluster}}'
+        server: https://kubernetes.default.svc
         namespace: 'nginx-{{env}}'
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
-          allowEmpty: false
         syncOptions:
         - CreateNamespace=true
-        - PrunePropagationPolicy=foreground
-        - PruneLast=true
         retry:
           limit: 5
           backoff:
