@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: nginx  # ← Must match base deployment name
 spec:
-  replicas: 4
+  replicas: 3
   template:
     metadata:
       labels:
