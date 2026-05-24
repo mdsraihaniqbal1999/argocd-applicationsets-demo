@@ -8,7 +8,7 @@ spec:
   - list:
       elements:
       - env: dev
-        replicas: "1"
+        replicas: "2"
       - env: prod  
         replicas: "3"
   template:
