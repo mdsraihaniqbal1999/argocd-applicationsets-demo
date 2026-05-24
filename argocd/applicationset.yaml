@@ -8,9 +8,7 @@ spec:
   - list:
       elements:
       - env: dev
-        replicas: "2"
-      - env: prod  
-        replicas: "3"
+      - env: prod
   template:
     metadata:
       name: 'nginx-{{env}}'
